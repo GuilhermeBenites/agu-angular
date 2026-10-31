@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+.angular/
+docs/
+package-lock.json
+
+.artifacts/
+playwright-report/
+test-results/

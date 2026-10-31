@@ -36,3 +36,10 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+.artifacts/
+playwright-report/
+test-results/
+
+.env
+.env.local

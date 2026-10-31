@@ -1,73 +1,81 @@
-# Atenção
-Não crie PR ou faça commit neste repositório. Faça o download do skeleton, implemente sua solução, coloque no seu github e compartilhe conosco uma PR para revisão do código, em seguida iremos entrar em contato para uma segunda conversa para que nos explique o seu código.
+# AGU — Frontend
 
+SPA de tarefas com Angular 17.3/TypeScript 5.4, para consumir uma API PHP/Symfony em repositório independente.
 
-# Requisitos para Teste Técnico de Desenvolvedor AGU
-## Descrição do Projeto
-Você será responsável por desenvolver uma aplicação simples de gerenciamento de tarefas (To-Do List) que permita ao usuário adicionar, editar, remover e listar tarefas. A aplicação deverá ser desenvolvida utilizando a stack especificada. A interface deve ser intuitiva e responsiva. A comunicação entre o frontend e o backend deve ser realizada via REST API.
-Este teste pode ser melhorado, porém é necessário que seja respeitado as tecnologias listas.
+## Estado atual
 
-## Requisitos Funcionais
-### Autenticação:
+Autenticação, CRUD paginado com telas responsivas, Material/formulários reativos e NgRx. Instalação reproduzida em cópia limpa e integração validada com Redis ligado e desligado no backend.
 
-O usuário deve ser capaz de se autenticar utilizando JWT.
-A autenticação deve ser implementada no backend com PHP e Symfony.
+Crie sua conta em http://localhost:4200/register e entre em http://localhost:4200/login. Não há usuário/senha padrão. Após entrar, /tasks permite percorrer, criar, editar e excluir suas tarefas. /tasks/new cria; /tasks/:id/edit permite edição direta e reload.
 
-### Gerenciamento de Tarefas:
+Token permanece em sessionStorage; o reload confirma a sessão na API e a expiração faz logout automático. Falhas temporárias permitem tentar novamente. Exportação/RabbitMQ ficam fora do escopo atual; Redis está implementado no backend e não altera a configuração da SPA.
 
-- Adicionar uma nova tarefa.
-- Editar uma tarefa existente.
-- Remover uma tarefa.
-- Listar todas as tarefas.
-As tarefas devem ser armazenadas em um banco de dados MySQL.
+## Execução com Docker
 
-### Interface de Usuário:
+Requisito: Docker com Compose. Execute na raiz deste repositório; o backend pode estar em qualquer diretório ou máquina.
 
-- Desenvolver a interface em Angular 17.
-- Utilizar Angular Material ou PrimeNG para componentes UI.
-- Implementar formulários reativos com Angular Forms.
-- Utilizar NgRx para gerenciamento de estado.
-- Requisitos Não Funcionais
+```sh
+git clone --branch feat/complete-task-manager https://github.com/GuilhermeBenites/agu-angular.git
+cd agu-angular
+docker compose build frontend
+docker compose run --rm frontend npm ci
+docker compose up -d frontend
+```
 
-## Tecnologias Utilizadas
-### Frontend:
+Frontend em `http://localhost:4200`. A imagem usa Node **20.20.2** e Chromium para os testes. node_modules fica em volume próprio; execute npm ci novamente quando mudar o lockfile. Para parar: `docker compose down`.
 
-- Angular 17
-- Rxjs ou Ngrx ou Signals
-- TypeScript 5.4/5.5
-- SASS
-- HTML 5.2
-- CSS 2.1
-- JWT
-- WebSocket/SSE (opcional)
+A API deve ser iniciada separadamente, seguindo o [README do backend](https://github.com/GuilhermeBenites/agu-php/blob/feat/complete-task-manager/README.md). A versão das fases 3/4 atende ao contrato completo 0.1.0; Redis é uma otimização interna da API.
 
---- 
+## Configuração pública da API
 
+Edite `src/assets/config.json`:
 
-# Frontend
+```json
+{"apiBaseUrl": "http://localhost:8080/api"}
+```
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.8.
+O arquivo é carregado antes do bootstrap, sem recompilar a aplicação. O serviço valida a URL e os clientes HTTP recebem a configuração por injeção. Em falha de carregamento ou URL inválida, a inicialização falha com uma mensagem na tela.
 
-## Development server
+No build de produção, a configuração fica em `dist/frontend/browser/assets/config.json`; substitua esse arquivo ao preparar outro ambiente. Ele é público e não recebe credenciais.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Use a origem `http://localhost:4200` no navegador para o CORS padrão do backend. Copie .env.example para .env se quiser configurar FRONTEND_PORT e mudar a porta do Compose; nesse caso, ajuste também a origem permitida na API. A URL da API deve ser acessível pelo navegador.
 
-## Code scaffolding
+## Testes, qualidade e build
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```sh
+docker compose run --rm frontend npm run check
+docker compose run --rm frontend npm run test:coverage
+docker compose run --rm frontend npm run build
+```
 
-## Build
+- `check`: ESLint TypeScript e Prettier em modo de verificação.
+- `test:ci`: Jasmine/Karma com Chromium headless no ambiente Docker.
+- `test:coverage`: a suíte com relatórios em `coverage/`.
+- `build`: build de produção em `dist/frontend/browser/`.
+- `format`: aplica a formatação dos arquivos do projeto.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+A suíte acumulada tem **78 testes aprovados** e **91,56% de cobertura de linhas**, incluindo autenticação, tarefas, estado/effects, formulários, guard e interceptor. O Playwright executou **20 cenários em desktop/celular** contra API/MySQL/Redis isolados e repetiu **oito execuções de tarefas com Redis desligado**. Reprodução em [TESTES_E2E.md](docs/TESTES_E2E.md).
 
-## Running unit tests
+A [CI própria](.github/workflows/ci.yml) usa os mesmos comandos, com cobertura como artefato. O job E2E usa por padrão GuilhermeBenites/agu-php na referência submission-v1, com teste de Redis indisponível. E2E_BACKEND_REPOSITORY/E2E_BACKEND_REF permitem sobrescrever esse par. Resultados locais/remotos em [FASE_5.md](docs/FASE_5.md).
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Alternativa local
 
-## Running end-to-end tests
+Use Node 20.20.2 (`.nvmrc`), execute npm ci e use os mesmos scripts npm. Para Karma local, instale Chrome/Chromium e execute `npm test -- --watch=false --browsers=ChromeHeadless`; CHROME_BIN pode indicar o binário. Não reutilize node_modules instalado em outro sistema operacional.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## Documentação e submissão
 
-## Further help
+- [Integração, tipos, sessão e etapas](docs/INTEGRACAO.md).
+- [Fechamento da fase 0](docs/FASE_0.md).
+- [Resultados e limites da fase 1](docs/FASE_1.md).
+- [Resultados, cobertura e revisão visual da fase 2](docs/FASE_2.md).
+- [CRUD, cobertura e revisão visual — fase 3](docs/FASE_3.md).
+- [Integração com cache e indisponibilidade — fase 4](docs/FASE_4.md).
+- [Execução dos testes ponta a ponta](docs/TESTES_E2E.md).
+- [Entrega e reprodução limpa — fase 5](docs/FASE_5.md).
+- [Arquitetura e decisões](docs/ARQUITETURA.md).
+- [Roteiro de demonstração](docs/DEMONSTRACAO.md).
+- [Enunciado e README originais](docs/ENUNCIADO.md).
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+[OpenAPI canônico 0.1.0](https://github.com/GuilhermeBenites/agu-php/blob/submission-v1/docs/openapi.yaml). Repositórios próprios: [frontend](https://github.com/GuilhermeBenites/agu-angular) e [backend](https://github.com/GuilhermeBenites/agu-php). A implementação fica na branch feat/complete-task-manager; main preserva o skeleton para comparação.
+
+A abertura das PRs será feita manualmente pelo candidato. [Texto preparado](docs/PR.md) e [comparação da implementação](https://github.com/GuilhermeBenites/agu-angular/compare/main...feat/complete-task-manager?expand=1). O código não será enviado ao repositório do avaliador.

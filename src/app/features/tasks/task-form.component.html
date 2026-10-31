@@ -1,0 +1,99 @@
+<app-nav />
+<main class="editor">
+  <a class="back-link" routerLink="/tasks"><span aria-hidden="true">←</span> Voltar às tarefas</a>
+  <span class="form-eyebrow">UM PASSO DE CADA VEZ</span>
+  <h1>{{ id === null ? 'Dê espaço a uma nova ideia.' : 'Um novo olhar para sua tarefa.' }}</h1>
+  <p class="intro">
+    {{
+      id === null
+        ? 'Tire da cabeça e coloque no seu espaço.'
+        : 'Ajuste os detalhes e siga no seu ritmo.'
+    }}
+  </p>
+  @if (tasks.state$ | async; as vm) {
+    <section class="editor-card" [attr.aria-busy]="vm.detailLoading || vm.saving">
+      <div class="card-heading">
+        <span class="card-icon" aria-hidden="true">✦</span>
+        <h2>{{ id === null ? 'Nova tarefa' : 'Editar tarefa' }}</h2>
+      </div>
+      @if (vm.detailLoading) {
+        <mat-progress-bar mode="indeterminate" aria-label="Carregando tarefa" />
+        <p class="load-message" role="status">Buscando sua tarefa…</p>
+      } @else if (invalidId || vm.detailError) {
+        <div class="form-feedback" role="alert">
+          <p>
+            {{
+              invalidId || vm.detailError?.code === 'task_not_found'
+                ? 'Tarefa não encontrada.'
+                : vm.detailError?.message
+            }}
+          </p>
+          @if (!invalidId && vm.detailError?.code !== 'task_not_found') {
+            <button mat-stroked-button (click)="tasks.get(id!)">Tentar novamente</button>
+          }
+          <a mat-button routerLink="/tasks">Voltar às tarefas</a>
+        </div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <fieldset [disabled]="vm.saving">
+            <mat-form-field appearance="outline"
+              ><mat-label>Título</mat-label
+              ><input
+                matInput
+                formControlName="title"
+                autocomplete="off"
+                placeholder="O que você quer fazer?"
+                cdkFocusInitial
+              /><mat-hint>Até 255 caracteres</mat-hint>
+              @if (form.controls.title.hasError('required')) {
+                <mat-error>Informe um título.</mat-error>
+              } @else {
+                <mat-error>Use até 255 caracteres.</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline"
+              ><mat-label>Descrição (opcional)</mat-label
+              ><textarea
+                matInput
+                formControlName="description"
+                rows="6"
+                placeholder="Anote os detalhes que ajudam a dar o próximo passo."
+              ></textarea
+              ><mat-hint>Até 10.000 caracteres</mat-hint
+              ><mat-error>Use até 10.000 caracteres.</mat-error></mat-form-field
+            >
+          </fieldset>
+          @if (vm.saveError) {
+            <div class="form-feedback failure" role="alert">
+              <p>{{ vm.saveError.message }}</p>
+              @for (detail of vm.saveError.details; track $index) {
+                <p>
+                  {{
+                    detail.field === 'title'
+                      ? 'Título'
+                      : detail.field === 'description'
+                        ? 'Descrição'
+                        : 'Formulário'
+                  }}: {{ detail.message }}
+                </p>
+              }
+            </div>
+          }
+          <div class="form-actions">
+            <a
+              mat-button
+              routerLink="/tasks"
+              [attr.aria-disabled]="vm.saving"
+              [class.disabled-link]="vm.saving"
+              [tabIndex]="vm.saving ? -1 : 0"
+              >Cancelar</a
+            ><button mat-flat-button color="primary" type="submit" [disabled]="vm.saving">
+              {{ vm.saving ? 'Salvando…' : id === null ? 'Criar tarefa' : 'Salvar alterações' }}
+            </button>
+          </div>
+        </form>
+      }
+    </section>
+    <p class="editor-note">Cada ideia registrada é um começo.</p>
+  }
+</main>

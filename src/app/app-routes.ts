@@ -1,15 +1,37 @@
 import { Routes } from '@angular/router';
-
-import { AuthGuard } from './auth.guard';
-import {LoginComponent} from "./components/login/login.component";
-import {RegisterComponent} from "./components/register/register.component";
-import {TaskListComponent} from "./components/task-list/task-list.component";
-import {TaskComponent} from "./components/task/task.component";
-
+import { authGuard, guestGuard } from './auth.guard';
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'tasks', component: TaskListComponent, canActivate: [AuthGuard] },
-  { path: 'task', component: TaskComponent, canActivate: [AuthGuard] },
-  { path: '', redirectTo: '/tasks', pathMatch: 'full' }
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./components/login/login.component').then((module) => module.LoginComponent),
+    canActivate: [guestGuard],
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./components/register/register.component').then((module) => module.RegisterComponent),
+    canActivate: [guestGuard],
+  },
+  ...['tasks/new', 'tasks/:id/edit'].map((path) => ({
+    path,
+    loadComponent: () =>
+      import('./features/tasks/task-form.component').then((module) => module.TaskFormComponent),
+    canActivate: [authGuard],
+  })),
+  {
+    path: 'tasks',
+    loadComponent: () =>
+      import('./features/workspace/workspace.component').then(
+        (module) => module.WorkspaceComponent,
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'session',
+    loadComponent: () =>
+      import('./features/session/session.component').then((module) => module.SessionComponent),
+  },
+  { path: '', redirectTo: 'tasks', pathMatch: 'full' },
+  { path: '**', redirectTo: 'tasks' },
 ];

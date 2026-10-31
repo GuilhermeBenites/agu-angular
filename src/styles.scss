@@ -1,1 +1,264 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+@include mat.core();
+$agu-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: mat.define-palette(mat.$teal-palette, 800),
+      accent: mat.define-palette(mat.$light-green-palette, 300),
+      warn: mat.define-palette(mat.$red-palette, 800),
+    ),
+    typography: mat.define-typography-config(
+        $font-family: '"Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif',
+      ),
+    density: 0,
+  )
+);
+@include mat.all-component-themes($agu-theme);
+:root {
+  --agu-ink: #213c2d;
+  --agu-muted: #7a8676;
+  --agu-primary: #17543f;
+  --agu-background: #f9faf6;
+  color-scheme: light;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--agu-background);
+  color: var(--agu-ink);
+  font-family:
+    'Segoe UI',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button,
+input {
+  font: inherit;
+}
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+a {
+  color: var(--agu-primary);
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #76a55f;
+  outline-offset: 4px;
+}
+::selection {
+  background: #dceac9;
+  color: #174637;
+}
+.form-eyebrow {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.9px;
+  color: #647559;
+  margin-bottom: 15px;
+}
+.auth-title {
+  font-size: 43px;
+  line-height: 1.12;
+  font-weight: 500;
+  letter-spacing: -1.8px;
+  margin: 0 0 18px;
+  color: #243f2d;
+}
+.auth-description {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #68765f;
+  margin: 0 0 34px;
+}
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+.auth-form mat-form-field {
+  width: 100%;
+  --mdc-outlined-text-field-container-shape: 8px;
+  --mdc-outlined-text-field-outline-color: #d6ddce;
+  --mdc-outlined-text-field-hover-outline-color: #91aa85;
+  --mdc-outlined-text-field-input-text-color: #334b35;
+  --mdc-outlined-text-field-label-text-color: #647559;
+  --mat-form-field-container-text-size: 13px;
+  --mdc-outlined-text-field-label-text-size: 13px;
+}
+.auth-form .mat-mdc-form-field-subscript-wrapper {
+  font-size: 10px;
+  line-height: 1.4;
+}
+.auth-form .mat-mdc-form-field-hint-wrapper,
+.auth-form .mat-mdc-form-field-error-wrapper {
+  padding: 2px 0 0;
+}
+.auth-form .mat-mdc-text-field-wrapper {
+  background: #fffffb;
+}
+.auth-form .mat-mdc-form-field-infix {
+  min-height: 55px;
+}
+.visibility-button svg {
+  width: 19px;
+  height: 19px;
+  stroke: #84917a;
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.primary-action.mat-mdc-button-base {
+  height: 51px;
+  border-radius: 8px;
+  width: 100%;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  font-size: 12px;
+  box-shadow: 0 4px 10px #1746370e;
+  background: var(--agu-primary);
+  color: #fff;
+  margin-top: 7px;
+}
+.primary-action.mat-mdc-button-base:disabled {
+  background: #d6dfcf;
+  color: #6d8067;
+}
+.primary-action .mdc-button__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  width: 100%;
+}
+.primary-action .mdc-button__label > span {
+  font-size: 17px;
+  margin-left: auto;
+}
+.primary-action mat-spinner {
+  --mdc-circular-progress-active-indicator-color: #f2f7eb;
+}
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  color: #6c795f;
+  margin: 33px 0 24px;
+}
+.auth-divider span {
+  height: 1px;
+  flex: 1;
+  background: #e1e6d9;
+}
+.auth-switch {
+  font-size: 11px;
+  text-align: center;
+  color: #68765f;
+  line-height: 1.8;
+  margin: 0;
+}
+.auth-switch a {
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 5px;
+  color: #375f39;
+}
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+.auth-switch a span {
+  margin-left: 3px;
+}
+.form-notice,
+.form-alert {
+  border: 1px solid #dbe5ce;
+  background: #eef4e7;
+  border-radius: 7px;
+  color: #4f7044;
+  padding: 12px 14px;
+  font-size: 11px;
+  line-height: 1.6;
+  margin-bottom: 22px;
+}
+.form-notice span {
+  margin-right: 6px;
+}
+.form-alert {
+  border-color: #ead9cf;
+  background: #fcf0e9;
+  color: #9b4b32;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: #62735a;
+  text-decoration: none;
+  margin-bottom: 32px;
+}
+.back-link:hover {
+  color: #27563c;
+}
+.register-title {
+  font-size: 38px;
+}
+.register-switch {
+  margin-top: 25px;
+}
+.auth-form mat-hint {
+  color: #69765f;
+}
+@media (max-width: 760px) {
+  .auth-title {
+    font-size: 39px;
+  }
+  .register-title {
+    font-size: 35px;
+  }
+  .auth-description {
+    margin-bottom: 27px;
+  }
+  .back-link {
+    margin-bottom: 25px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.startup-screen {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  color: #68765f;
+  font-size: 12px;
+}
+.startup-brand {
+  font-size: 38px;
+  letter-spacing: -2px;
+  font-weight: 700;
+  color: #174637;
+}
