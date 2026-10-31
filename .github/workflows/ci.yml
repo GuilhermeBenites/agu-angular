@@ -39,7 +39,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Test authentication and tasks against an isolated backend revision
-        run: bash scripts/e2e.sh
+        run: |
+          mkdir -p .artifacts
+          if bash scripts/e2e.sh > .artifacts/coordinator.log 2>&1; then
+            cat .artifacts/coordinator.log
+          else
+            result=$?
+            cat .artifacts/coordinator.log
+            while IFS= read -r line; do
+              line="${line:0:4000}"
+              line="${line//%/%25}"
+              printf '::error title=E2E coordinator::%s\n' "$line"
+            done < <(tail -n 35 .artifacts/coordinator.log)
+            exit "$result"
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
