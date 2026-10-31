@@ -7,6 +7,18 @@ alias_name="agu-api-$$"
 front_project="${E2E_FRONTEND_PROJECT:-agu-frontend}"
 api_ready=0
 cleanup() {
+  result=$?
+  if [[ "$result" != 0 && "$api_ready" == 1 ]]; then
+    mkdir -p "$front_dir/.artifacts"
+    HTTP_PORT=0 "${api_compose[@]}" logs --no-color --tail=80 backend nginx > "$front_dir/.artifacts/api-failure.log" 2>&1 || true
+    if [[ "${GITHUB_ACTIONS:-false}" == true ]]; then
+      while IFS= read -r line; do
+        line="${line:0:4000}"
+        line="${line//%/%25}"
+        printf '::error title=Isolated API log::%s\n' "$line"
+      done < <(grep -Ei 'error|critical|denied' "$front_dir/.artifacts/api-failure.log" | tail -n 3)
+    fi
+  fi
   if [[ "$api_ready" == 1 ]]; then
     HTTP_PORT=0 "${api_compose[@]}" down --volumes --remove-orphans >/dev/null 2>&1 || true
   fi
@@ -81,13 +93,13 @@ for attempt in {1..30}; do
   if [[ "$attempt" -eq 30 ]]; then echo 'Frontend did not become ready.' >&2; exit 1; fi
   sleep 1
 done
-"${front_compose[@]}" exec -T -e "API_BASE_URL=http://$alias_name/api" -e E2E_BASE_URL=http://localhost:4200 frontend npm run e2e
+"${front_compose[@]}" exec -T -e "GITHUB_ACTIONS=${GITHUB_ACTIONS:-false}" -e "API_BASE_URL=http://$alias_name/api" -e E2E_BASE_URL=http://localhost:4200 frontend npm run e2e
 if [[ "${E2E_VERIFY_REDIS_OUTAGE:-0}" == 1 && "$has_redis" == 1 ]]; then
   key_count="$(HTTP_PORT=0 "${api_compose[@]}" exec -T redis redis-cli DBSIZE)"
   [[ "$key_count" =~ ^[0-9]+$ && "$key_count" -gt 0 ]] || { echo 'Expected populated Redis before the outage test.' >&2; exit 1; }
   echo "Redis keys after the normal E2E: $key_count"
   echo 'Stopping the isolated Redis to verify the full task UI against MySQL fallback.'
   HTTP_PORT=0 "${api_compose[@]}" stop redis
-  "${front_compose[@]}" exec -T -e "API_BASE_URL=http://$alias_name/api" -e E2E_BASE_URL=http://localhost:4200 -e PLAYWRIGHT_HTML_OUTPUT_DIR=/app/playwright-report/redis-outage frontend npm run e2e -- e2e/tasks.spec.ts --output=/app/test-results/redis-outage
+  "${front_compose[@]}" exec -T -e "GITHUB_ACTIONS=${GITHUB_ACTIONS:-false}" -e "API_BASE_URL=http://$alias_name/api" -e E2E_BASE_URL=http://localhost:4200 -e PLAYWRIGHT_HTML_OUTPUT_DIR=/app/playwright-report/redis-outage frontend npm run e2e -- e2e/tasks.spec.ts --output=/app/test-results/redis-outage
   HTTP_PORT=0 "${api_compose[@]}" up -d --wait redis
 fi

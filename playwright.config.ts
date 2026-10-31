@@ -8,7 +8,10 @@ export default defineConfig({
   retries: 0,
   timeout: 30000,
   expect: { timeout: 10000 },
-  reporter: [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
+  reporter:
+    process.env['GITHUB_ACTIONS'] === 'true'
+      ? [['list'], ['github'], ['html', { outputFolder: 'playwright-report', open: 'never' }]]
+      : [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
   outputDir: 'test-results',
   use: {
     baseURL: process.env['E2E_BASE_URL'] ?? 'http://localhost:4200',
