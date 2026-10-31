@@ -1,6 +1,6 @@
 # Fase 5 — entrega e reprodução
 
-Validação local concluída em 31/10/2026. Publicação/CI remota serão registradas abaixo após a execução; o candidato optou por abrir as PRs manualmente.
+Validação local concluída em 31/10/2026 e implementação publicada em repositório próprio. As execuções remotas estão vinculadas abaixo; o candidato optou por abrir as PRs manualmente.
 
 ## Reprodução independente
 
@@ -38,4 +38,8 @@ Destinos: [frontend](https://github.com/GuilhermeBenites/agu-angular) e [backend
 
 ## Publicação e CI remota
 
-Em preparação. Não considerar CI remota aprovada até haver execução concluída registrada nesta seção. A criação das PRs permanece manual por decisão do candidato.
+A implementação está na branch [feat/complete-task-manager](https://github.com/GuilhermeBenites/agu-angular/tree/feat/complete-task-manager). A [execução 41247125409](https://github.com/GuilhermeBenites/agu-angular/actions/runs/41247125409) verifica o commit funcional d43d49d8efa58c4eb2c6d7ca8e7777bdcdb440bf em checkout Git: lint, cobertura e build em um job; E2E com backend remoto fixado em submission-v1 e Redis indisponível em outro.
+
+Um clone real da branch foi conferido sem node_modules, .env ou builds. A revisão documental que registra a publicação não altera os fontes funcionais. O resultado de cada revisão é consultado nos [checks atuais da branch](https://github.com/GuilhermeBenites/agu-angular/actions/workflows/ci.yml?query=branch%3Afeat%2Fcomplete-task-manager); uma execução em andamento não equivale a aprovação.
+
+Abertura manual: [comparar main com a implementação](https://github.com/GuilhermeBenites/agu-angular/compare/main...feat/complete-task-manager?expand=1), usando [o texto preparado](PR.md). Nenhuma PR foi criada pela automação.

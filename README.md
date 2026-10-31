@@ -12,7 +12,7 @@ Token permanece em sessionStorage; o reload confirma a sessão na API e a expira
 
 ## Execução com Docker
 
-Requisito: Docker com Compose. Execute na raiz deste repositório; o backend pode estar em qualquer diretório ou máquina.
+Requisito: Docker com Compose. Clone a branch de implementação e execute os comandos na raiz da cópia; o backend pode estar em qualquer diretório ou máquina.
 
 ```sh
 git clone --branch feat/complete-task-manager https://github.com/GuilhermeBenites/agu-angular.git
