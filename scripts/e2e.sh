@@ -6,6 +6,8 @@ project="agu-e2e-$$"
 alias_name="agu-api-$$"
 front_project="${E2E_FRONTEND_PROJECT:-agu-frontend}"
 api_ready=0
+cloned_backend=0
+backend_dir=
 cleanup() {
   result=$?
   if [[ "$result" != 0 && "$api_ready" == 1 ]]; then
@@ -18,6 +20,11 @@ cleanup() {
         printf '::error title=Isolated API log::%s\n' "$line"
       done < <(grep -Ei 'error|critical|denied' "$front_dir/.artifacts/api-failure.log" | tail -n 3)
     fi
+  fi
+  # Composer runs as container root. Only restore ownership in our disposable clone,
+  # so the non-root Linux runner can remove it without changing a caller's checkout.
+  if [[ "$api_ready" == 1 && "$cloned_backend" == 1 && "$backend_dir" == "$temp_dir/backend" && -d "$backend_dir/backend/vendor" ]]; then
+    HTTP_PORT=0 "${api_compose[@]}" run --rm --no-deps --user 0 backend chown -R "$(id -u):$(id -g)" /var/www/html || true
   fi
   if [[ "$api_ready" == 1 ]]; then
     HTTP_PORT=0 "${api_compose[@]}" down --volumes --remove-orphans >/dev/null 2>&1 || true
@@ -35,6 +42,7 @@ if [[ -z "$backend_dir" ]]; then
   git -C "$temp_dir/backend" fetch --quiet --depth=1 origin "$E2E_BACKEND_REF"
   git -C "$temp_dir/backend" checkout --quiet --detach FETCH_HEAD
   backend_dir="$temp_dir/backend"
+  cloned_backend=1
 fi
 backend_dir="$(cd "$backend_dir" && pwd)"
 [[ -f "$backend_dir/docker-compose.yml" ]] || { echo 'Backend Compose not found.' >&2; exit 1; }
