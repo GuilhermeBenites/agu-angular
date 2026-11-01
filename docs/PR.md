@@ -8,7 +8,7 @@ O skeleton não completava o ciclo de sessão nem o CRUD de tarefas. A SPA agora
 
 NgRx organiza autenticação e tarefas com reducers/selectors/effects/facades. Token e senha ficam fora do Store; requisições pendentes são canceladas no fim da sessão e respostas antigas não repovoam dados de outra conta. Erros preservam a edição e permitem nova tentativa. A URL pública da API é configurada antes do bootstrap.
 
-A integração usa o [backend Symfony](https://github.com/GuilhermeBenites/agu-php), contrato 0.1.0. O coordenador E2E recebe diretório ou URL/ref, provisiona banco/cache/chaves temporários e permite um projeto frontend separado. Nenhum comando exige uma pasta irmã.
+A integração usa o [backend Symfony](https://github.com/GuilhermeBenites/agu-php), contrato 0.1.0. O coordenador E2E recebe diretório ou URL/ref, provisiona banco/cache/chaves temporários e permite um projeto frontend separado. Nenhum comando exige uma pasta irmã. A limpeza do clone temporário restaura UID/GID no Linux sem alterar o checkout fornecido pelo usuário; os diagnósticos do coordenador/Playwright são preservados nos checks da CI.
 
 ## Validação local
 

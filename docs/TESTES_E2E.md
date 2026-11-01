@@ -66,3 +66,5 @@ Relatório normal: playwright-report/index.html. Relatório adicional: playwrigh
 E2E_FRONTEND_PROJECT altera o projeto Compose do frontend (padrão agu-frontend); a rede temporária usa o projeto escolhido. Isso permite validar uma cópia sem reiniciar o servidor de desenvolvimento. FRONTEND_PORT continua sendo a porta publicada; o runner dentro do contêiner usa localhost:4200.
 
 O backend temporário recebe DATABASE_URL, REDIS_URL, APP_ENV, JWT, TTL e CORS definidos pelo coordenador. Não herda valores perigosos de backend/.env.local. Chaves são geradas em um volume JWT exclusivo removido na limpeza. O modo de diretório aceita snapshots sem .git; o modo de referência Git registra o SHA completo obtido. Na fase 5, um arquivo local deliberadamente inválido confirmou esse isolamento.
+
+A limpeza restaura a propriedade dos arquivos do clone descartável para o usuário do executor antes de removê-lo, cobrindo o Composer executado como root no Linux. Não faz chown do checkout passado pelo usuário. Em falha, .artifacts/coordinator.log (na CI) e .artifacts/api-failure.log preservam o diagnóstico; o Playwright também emite anotações no GitHub.

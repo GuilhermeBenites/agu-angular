@@ -38,8 +38,14 @@ Destinos: [frontend](https://github.com/GuilhermeBenites/agu-angular) e [backend
 
 ## Publicação e CI remota
 
-A implementação está na branch [feat/complete-task-manager](https://github.com/GuilhermeBenites/agu-angular/tree/feat/complete-task-manager). A [execução 41247125409](https://github.com/GuilhermeBenites/agu-angular/actions/runs/41247125409) verifica o commit funcional d43d49d8efa58c4eb2c6d7ca8e7777bdcdb440bf em checkout Git: lint, cobertura e build em um job; E2E com backend remoto fixado em submission-v1 e Redis indisponível em outro.
+A implementação está na branch [feat/complete-task-manager](https://github.com/GuilhermeBenites/agu-angular/tree/feat/complete-task-manager). A CI verifica checkout Git em dois jobs: lint, cobertura e build; E2E com backend remoto fixado em submission-v1 e Redis indisponível. O resultado final de cada revisão está nos checks atuais vinculados abaixo.
 
-Um clone real da branch foi conferido sem node_modules, .env ou builds. A revisão documental que registra a publicação não altera os fontes funcionais. O resultado de cada revisão é consultado nos [checks atuais da branch](https://github.com/GuilhermeBenites/agu-angular/actions/workflows/ci.yml?query=branch%3Afeat%2Fcomplete-task-manager); uma execução em andamento não equivale a aprovação.
+Um clone real da branch foi conferido sem node_modules, .env ou builds. Após a publicação, o encerramento do coordenador foi corrigido para o runner Linux; o código de produto permaneceu preservado. O resultado de cada revisão é consultado nos [checks atuais da branch](https://github.com/GuilhermeBenites/agu-angular/actions/workflows/ci.yml?query=branch%3Afeat%2Fcomplete-task-manager); uma execução em andamento não equivale a aprovação.
 
 Abertura manual: [comparar main com a implementação](https://github.com/GuilhermeBenites/agu-angular/compare/main...feat/complete-task-manager?expand=1), usando [o texto preparado](PR.md). Nenhuma PR foi criada pela automação.
+
+## Correção da limpeza no runner Linux
+
+As primeiras execuções remotas sinalizaram erro ao remover arquivos vendor do clone temporário, criados como root pelo Composer no contêiner. O comportamento não apareceu no bind mount do Docker Desktop/macOS. Um ensaio em filesystem Linux nativo confirmou a falha de remoção como usuário sem privilégio e o sucesso após restaurar a propriedade.
+
+O coordenador agora restaura UID/GID do executor somente quando ele próprio clonou o backend dentro do diretório temporário conhecido, antes de remover serviços/volumes e arquivos. Não altera permissões de um checkout fornecido por E2E_BACKEND_DIR/argumento. Os testes da aplicação e seus limites não foram relaxados. Logs do coordenador, erros do Playwright e falhas de API passaram a ser preservados/expostos nos checks, facilitando diagnósticos de instalação ou encerramento.

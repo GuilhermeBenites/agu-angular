@@ -31,3 +31,5 @@ Material fornece controles; o visual usa SCSS e SVG locais. Layout conferido em 
 Jasmine/Karma testa estado, effects, HTTP, guard/interceptor e formulários. Playwright percorre o fluxo contra API/MySQL/Redis reais e repete tarefas com Redis desligado. Somente os cenários de recuperação injetam falhas HTTP controladas.
 
 O coordenador recebe um diretório explícito ou URL/ref Git do backend. Usa projeto temporário, banco/cache/chaves próprios e configuração de processo que não herda .env.local da origem. E2E_FRONTEND_PROJECT permite um projeto frontend separado. A CI deve apontar a uma referência explícita e compatível da API.
+
+Na limpeza, arquivos criados pelo Composer como root têm UID/GID restaurados para o executor apenas no clone descartável criado pelo coordenador. Um checkout fornecido pelo usuário não recebe essa operação. Essa regra corrige a diferença de permissões entre Docker Desktop/macOS e o runner Linux.
