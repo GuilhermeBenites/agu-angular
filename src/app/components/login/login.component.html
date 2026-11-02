@@ -1,12 +1,80 @@
-<div>
-  <h2>Login</h2>
-  <form (ngSubmit)="login()">
-    <label for="username">Usuário:</label>
-    <input type="text" id="username" [(ngModel)]="username" name="username" required>
-
-    <label for="password">Senha:</label>
-    <input type="password" id="password" [(ngModel)]="password" name="password" required>
-
-    <button type="submit">Login</button>
-  </form>
-</div>
+<app-auth-shell>
+  <span class="form-eyebrow">BEM-VINDO DE VOLTA</span>
+  <h1 class="auth-title">Bom ter você<br />por aqui.</h1>
+  <p class="auth-description">Entre na sua conta e encontre seu foco.</p>
+  @if (registered) {
+    <div class="form-notice" role="status"><span>✓</span> Conta criada. Agora é só entrar.</div>
+  }
+  @if (expired) {
+    <div class="form-notice" role="status">Sua sessão expirou. Entre novamente.</div>
+  }
+  @if (auth.state$ | async; as vm) {
+    @if (vm.loginError) {
+      <div class="form-alert" role="alert">{{ vm.loginError.message }}</div>
+    }
+    <form [formGroup]="form" (ngSubmit)="login()" class="auth-form" novalidate>
+      <mat-form-field appearance="outline"
+        ><mat-label>Nome de usuário</mat-label
+        ><input
+          matInput
+          formControlName="username"
+          autocomplete="username"
+          autocapitalize="none"
+          spellcheck="false"
+          required
+        />
+        @if (form.controls.username.touched && form.controls.username.invalid) {
+          <mat-error>{{ fieldError(form.controls.username) }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline"
+        ><mat-label>Senha</mat-label
+        ><input
+          matInput
+          formControlName="password"
+          [type]="showPassword ? 'text' : 'password'"
+          autocomplete="current-password"
+          required
+        /><button
+          mat-icon-button
+          matSuffix
+          type="button"
+          class="visibility-button"
+          [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+          [attr.aria-pressed]="showPassword"
+          (click)="showPassword = !showPassword"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+            <circle cx="12" cy="12" r="3" />
+            @if (showPassword) {
+              <path d="m4 3 16 18" />
+            }
+          </svg>
+        </button>
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <mat-error>{{ fieldError(form.controls.password) }}</mat-error>
+        }
+      </mat-form-field>
+      <button
+        mat-flat-button
+        color="primary"
+        class="primary-action"
+        type="submit"
+        [disabled]="vm.loginPending"
+        [attr.aria-busy]="vm.loginPending"
+      >
+        @if (vm.loginPending) {
+          <mat-spinner diameter="18" /> Entrando…
+        } @else {
+          Entrar na minha conta <span aria-hidden="true">↗</span>
+        }
+      </button>
+    </form>
+  }
+  <div class="auth-divider"><span></span>SEU PRÓXIMO PASSO<span></span></div>
+  <p class="auth-switch">
+    Ainda não tem uma conta?
+    <a routerLink="/register">Criar uma conta <span aria-hidden="true">↗</span></a>
+  </p>
+</app-auth-shell>

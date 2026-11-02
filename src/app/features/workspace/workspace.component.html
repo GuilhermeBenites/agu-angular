@@ -1,0 +1,124 @@
+<app-nav />
+<main class="workspace">
+  @if (auth.state$ | async; as authVm) {
+    <header class="greeting">
+      <div>
+        <span class="form-eyebrow">SEU ESPAÇO, SEU RITMO</span>
+        <h1>Bem-vindo, {{ authVm.user?.username }}<span>.</span></h1>
+        <p>Um pouco de clareza para o que vem a seguir.</p>
+      </div>
+      <a mat-flat-button color="primary" routerLink="/tasks/new" class="new-task"
+        ><svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        >
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        Nova tarefa</a
+      >
+    </header>
+  }
+  @if (tasks.state$ | async; as vm) {
+    <section class="tasks-panel" aria-labelledby="tasks-title" [attr.aria-busy]="vm.loading">
+      <div class="panel-heading">
+        <div>
+          <span class="section-kicker">ORGANIZE O QUE IMPORTA</span>
+          <h2 id="tasks-title">
+            Suas tarefas <span class="count">{{ vm.pagination.total }}</span>
+          </h2>
+        </div>
+        <span class="order-label">Mais recentes primeiro</span>
+      </div>
+      @if (vm.notice) {
+        <p class="feedback success" role="status">{{ vm.notice }}</p>
+      }
+      @if (vm.deleteError) {
+        <p class="feedback failure" role="alert">
+          Não foi possível excluir. {{ vm.deleteError.message }} Tente novamente na tarefa.
+        </p>
+      }
+      @if (vm.loading) {
+        <mat-progress-bar mode="indeterminate" aria-label="Carregando tarefas" />
+        <div class="loading-state" role="status">Organizando seu espaço…</div>
+      } @else if (vm.listError) {
+        <div class="empty-state" role="alert">
+          <span class="state-symbol" aria-hidden="true">↻</span>
+          <h3>Não foi possível carregar suas tarefas.</h3>
+          <p>{{ vm.listError.message }}</p>
+          <button mat-stroked-button color="primary" (click)="retry(vm.page, vm.limit)">
+            Tentar novamente
+          </button>
+        </div>
+      } @else if (vm.items.length === 0) {
+        <div class="empty-state">
+          <div class="empty-illustration" aria-hidden="true"><span>✓</span><i></i><i></i></div>
+          <span class="section-kicker">TUDO COMEÇA COM UM PASSO</span>
+          <h3>Abra espaço para suas ideias.</h3>
+          <p>Registre o que você quer fazer.<br />Uma tarefa de cada vez, no seu ritmo.</p>
+          <a mat-stroked-button color="primary" routerLink="/tasks/new"
+            >Criar minha primeira tarefa</a
+          >
+        </div>
+      } @else {
+        <div class="task-list">
+          @for (task of vm.items; track task.id) {
+            <article class="task-row" [attr.aria-labelledby]="'task-' + task.id">
+              <span class="task-mark" aria-hidden="true">✦</span>
+              <div class="task-content">
+                <a
+                  class="task-title"
+                  [id]="'task-' + task.id"
+                  [routerLink]="['/tasks', task.id, 'edit']"
+                  >{{ task.title }}</a
+                >
+                <p class="task-description">{{ task.description || 'Sem descrição' }}</p>
+                <span class="task-date"
+                  >Criada em
+                  <time [attr.datetime]="task.createdAt">{{
+                    task.createdAt | date: 'dd/MM/yyyy · HH:mm'
+                  }}</time></span
+                >
+              </div>
+              <div class="task-actions">
+                <a
+                  mat-button
+                  color="primary"
+                  [routerLink]="['/tasks', task.id, 'edit']"
+                  [attr.aria-label]="'Editar ' + task.title"
+                  >Editar</a
+                ><button
+                  mat-button
+                  class="delete-button"
+                  [disabled]="vm.deletingId !== null"
+                  (click)="confirmDelete(task)"
+                  [attr.aria-label]="'Excluir ' + task.title"
+                >
+                  {{ vm.deletingId === task.id ? 'Excluindo…' : 'Excluir' }}
+                </button>
+              </div>
+            </article>
+          }
+        </div>
+      }
+      @if (!vm.listError && vm.pagination.total > 0) {
+        <mat-paginator
+          [length]="vm.pagination.total"
+          [pageIndex]="vm.page - 1"
+          [pageSize]="vm.limit"
+          [pageSizeOptions]="[10, 20, 50, 100]"
+          [disabled]="vm.loading || vm.deletingId !== null"
+          [showFirstLastButtons]="true"
+          (page)="paginate($event)"
+          aria-label="Paginação de tarefas"
+        />
+      }
+    </section>
+    <footer class="workspace-footer">
+      <span aria-hidden="true">✦</span> Pequenos passos também levam longe.
+    </footer>
+  }
+</main>

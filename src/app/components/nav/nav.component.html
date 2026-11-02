@@ -1,5 +1,15 @@
-<nav>
-  <a routerLink="/tasks">Tasks</a>
-  <a routerLink="/task">Add Task</a>
-  <a (click)="logout()">Logout</a>
-</nav>
+<header class="app-header">
+  <a routerLink="/tasks" class="app-wordmark" aria-label="AGU, início">agu<span>.</span></a
+  ><span class="app-header-divider"></span><span class="workspace-label">Meu espaço</span>
+  <div class="account-menu">
+    @if (auth.state$ | async; as vm) {
+      @if (vm.user) {
+        <span class="account-avatar" aria-hidden="true">{{
+          vm.user.username.charAt(0).toUpperCase()
+        }}</span
+        ><span class="account-name">{{ vm.user.username }}</span>
+      }
+    }
+    <button mat-stroked-button (click)="auth.logout()">Sair</button>
+  </div>
+</header>

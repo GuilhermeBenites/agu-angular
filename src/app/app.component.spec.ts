@@ -1,29 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-
-describe('AppComponent', () => {
-  beforeEach(async () => {
+import { provideFoundationTesting } from '../testing/test-providers';
+describe('Application route shell', () => {
+  it('lets each route control its own guest or authenticated layout', async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent],
+      providers: provideFoundationTesting(),
     }).compileComponents();
-  });
-
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it(`should have the 'frontend' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('frontend');
-  });
-
-  it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, frontend');
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.querySelector('router-outlet')).not.toBeNull();
+    expect(element.querySelector('app-nav')).toBeNull();
   });
 });

@@ -1,0 +1,70 @@
+.app-header {
+  height: 82px;
+  padding: 0 6%;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  border-bottom: 1px solid #e4e8de;
+  background: #f9faf6;
+}
+.app-wordmark {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  color: #174637;
+  text-decoration: none;
+}
+.app-wordmark span {
+  color: #8ca766;
+}
+.app-header-divider {
+  height: 22px;
+  width: 1px;
+  background: #dce2d7;
+}
+.workspace-label {
+  font-size: 13px;
+  color: #6f7f6f;
+}
+.account-menu {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.account-avatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #e3ebd9;
+  color: #42643c;
+  font-size: 12px;
+  font-weight: 600;
+}
+.account-name {
+  font-size: 12px;
+  color: #566851;
+  margin-right: 10px;
+}
+@media (max-width: 600px) {
+  .app-header {
+    padding: 0 22px;
+    gap: 14px;
+  }
+  .workspace-label,
+  .account-name {
+    display: none;
+  }
+  .account-menu {
+    gap: 10px;
+  }
+}
+
+.account-name {
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,0 +1,135 @@
+.editor {
+  max-width: 760px;
+  margin: auto;
+  padding: 32px 24px 40px;
+}
+.back-link {
+  display: block;
+  width: fit-content;
+  color: #6c7e61;
+  text-decoration: none;
+  font-size: 12px;
+  margin-bottom: 38px;
+}
+.back-link:hover {
+  text-decoration: underline;
+}
+.back-link span {
+  margin-right: 8px;
+}
+.form-eyebrow {
+  display: block;
+}
+h1 {
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -1.2px;
+  color: #294631;
+  margin: 12px 0;
+}
+.intro {
+  font-size: 14px;
+  color: #7a8771;
+  margin-bottom: 30px;
+}
+.editor-card {
+  background: #fffefa;
+  border: 1px solid #dfe6d8;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.card-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 30px;
+  border-bottom: 1px solid #e9ede3;
+}
+.card-icon {
+  color: #789755;
+  font-size: 23px;
+}
+h2 {
+  font-size: 18px;
+  font-weight: 500;
+  color: #395238;
+  margin: 0;
+}
+form {
+  padding: 30px;
+}
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+mat-form-field {
+  display: block;
+  margin-bottom: 24px;
+  width: 100%;
+}
+textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+.form-actions {
+  border-top: 1px solid #e9ede3;
+  padding-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.form-actions button {
+  border-radius: 8px;
+  height: 44px;
+  padding: 0 25px;
+}
+.form-feedback {
+  padding: 16px 24px;
+  font-size: 13px;
+  color: #7b503b;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.failure {
+  background: #fcf0eb;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+.form-feedback p {
+  margin: 4px 0;
+}
+.load-message {
+  padding: 50px 24px;
+  text-align: center;
+  color: #7a8771;
+  font-size: 14px;
+}
+.editor-note {
+  text-align: center;
+  font-size: 11px;
+  color: #8d9b7f;
+  margin-top: 26px;
+}
+.disabled-link {
+  pointer-events: none;
+  opacity: 0.5;
+}
+@media (max-width: 600px) {
+  .editor {
+    padding: 26px 16px;
+  }
+  h1 {
+    font-size: 28px;
+  }
+  .card-heading {
+    padding: 22px;
+  }
+  form {
+    padding: 24px 20px;
+  }
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+}

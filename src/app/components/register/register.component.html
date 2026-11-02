@@ -1,12 +1,109 @@
-<div>
-  <h2>Registrar</h2>
-  <form (ngSubmit)="register()">
-    <label for="username">Usuário:</label>
-    <input type="text" id="username" [(ngModel)]="username" name="username" required>
-
-    <label for="password">Senha:</label>
-    <input type="password" id="password" [(ngModel)]="password" name="password" required>
-
-    <button type="submit">Register</button>
-  </form>
-</div>
+<app-auth-shell>
+  <a class="back-link" routerLink="/login"><span aria-hidden="true">←</span> Voltar para entrar</a
+  ><span class="form-eyebrow">COMECE NO SEU RITMO</span>
+  <h1 class="auth-title register-title">Um novo espaço<br />para suas ideias.</h1>
+  <p class="auth-description">Crie sua conta e dê clareza ao seu dia.</p>
+  @if (auth.state$ | async; as vm) {
+    @if (vm.registrationError) {
+      <div class="form-alert" role="alert">{{ vm.registrationError.message }}</div>
+    }
+    <form [formGroup]="form" (ngSubmit)="register()" class="auth-form" novalidate>
+      <mat-form-field appearance="outline"
+        ><mat-label>Nome de usuário</mat-label
+        ><input
+          matInput
+          formControlName="username"
+          autocomplete="username"
+          autocapitalize="none"
+          spellcheck="false"
+          required
+        /><mat-hint>De 3 a 50 caracteres, sem espaços.</mat-hint>
+        @if (form.controls.username.touched && form.controls.username.invalid) {
+          <mat-error>{{ fieldError(form.controls.username) }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline"
+        ><mat-label>Senha</mat-label
+        ><input
+          matInput
+          formControlName="password"
+          [type]="showPassword ? 'text' : 'password'"
+          autocomplete="new-password"
+          required
+        /><button
+          mat-icon-button
+          matSuffix
+          type="button"
+          class="visibility-button"
+          [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+          [attr.aria-pressed]="showPassword"
+          (click)="showPassword = !showPassword"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+            <circle cx="12" cy="12" r="3" />
+            @if (showPassword) {
+              <path d="m4 3 16 18" />
+            }
+          </svg></button
+        ><mat-hint>Pelo menos 8 caracteres.</mat-hint>
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <mat-error>{{ fieldError(form.controls.password) }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline"
+        ><mat-label>Confirmar senha</mat-label
+        ><input
+          matInput
+          formControlName="confirmation"
+          [type]="showConfirmation ? 'text' : 'password'"
+          autocomplete="new-password"
+          [errorStateMatcher]="confirmationMatcher"
+          required
+        /><button
+          mat-icon-button
+          matSuffix
+          type="button"
+          class="visibility-button"
+          [attr.aria-label]="
+            showConfirmation ? 'Ocultar confirmação de senha' : 'Mostrar confirmação de senha'
+          "
+          [attr.aria-pressed]="showConfirmation"
+          (click)="showConfirmation = !showConfirmation"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </button>
+        @if (
+          form.controls.confirmation.touched &&
+          (form.controls.confirmation.invalid || form.hasError('passwordMismatch'))
+        ) {
+          <mat-error>{{
+            form.controls.confirmation.hasError('required')
+              ? 'Repita sua senha.'
+              : 'As senhas precisam ser iguais.'
+          }}</mat-error>
+        }
+      </mat-form-field>
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        class="primary-action"
+        [disabled]="vm.registrationPending"
+        [attr.aria-busy]="vm.registrationPending"
+      >
+        @if (vm.registrationPending) {
+          <mat-spinner diameter="18" /> Criando sua conta…
+        } @else {
+          Criar minha conta <span aria-hidden="true">↗</span>
+        }
+      </button>
+    </form>
+  }
+  <p class="auth-switch register-switch">
+    Já tem uma conta? <a routerLink="/login">Entrar <span aria-hidden="true">↗</span></a>
+  </p>
+</app-auth-shell>

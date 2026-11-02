@@ -1,0 +1,67 @@
+name: Frontend CI
+on:
+  push:
+    branches: ['**']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  frontend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Node 20 and Chromium environment
+        run: docker compose build frontend
+      - name: Lint and formatting
+        run: docker compose run --rm frontend npm run check
+      - name: Tests and coverage
+        run: docker compose run --rm frontend npm run test:coverage
+      - name: Production build
+        run: docker compose run --rm frontend npm run build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-coverage
+          path: coverage
+          if-no-files-found: ignore
+      - name: Stop project services
+        if: always()
+        run: docker compose down
+
+  application-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      E2E_BACKEND_REPOSITORY: ${{ vars.E2E_BACKEND_REPOSITORY || 'https://github.com/GuilhermeBenites/agu-php.git' }}
+      E2E_BACKEND_REF: ${{ vars.E2E_BACKEND_REF || 'submission-v1' }}
+      E2E_VERIFY_REDIS_OUTAGE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test authentication and tasks against an isolated backend revision
+        run: |
+          mkdir -p .artifacts
+          if bash scripts/e2e.sh > .artifacts/coordinator.log 2>&1; then
+            cat .artifacts/coordinator.log
+          else
+            result=$?
+            cat .artifacts/coordinator.log
+            while IFS= read -r line; do
+              line="${line:0:4000}"
+              line="${line//%/%25}"
+              printf '::error title=E2E coordinator::%s\n' "$line"
+            done < <(tail -n 35 .artifacts/coordinator.log)
+            exit "$result"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: application-e2e
+          path: |
+            playwright-report
+            test-results
+            .artifacts
+          if-no-files-found: ignore
+      - name: Stop frontend
+        if: always()
+        run: docker compose down
